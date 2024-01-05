@@ -10,7 +10,13 @@ import { Layout, Menu, Card, Col, Divider, Row, Space, Button } from "antd";
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { parseISO, format } from "date-fns";
-import { useAppSelector, useAppDispatch, useAppStore } from "../../lip/hooks";
+// import { useAppSelector, useAppDispatch, useAppStore } from "../../lip/hooks";
+import Navbar from "../component/Navbar";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  increment,
+  decrement,
+} from "../GlobalRedux/Features/counter/counterSlice";
 const style: React.CSSProperties = { background: "#0092ff", padding: "8px 0" };
 interface postList {
   id: string;
@@ -96,8 +102,27 @@ export default function page() {
       }
     }
   }
+  async function editPost(val: post) {
+    // try {
+    //   let payload: publish = {
+    //     content: val.content,
+    //     published: false,
+    //     title: val.title,
+    //   };
+    //   console.log(payload);
+    //   return;
+    //   const { data } = await axios.patch(
+    //     `https://post-api.opensource-technology.com/api/posts/${val.id}`,
+    //     payload
+    //   );
+    // } catch (err) {
+    //   throw new Error("Error");
+    // }
+  }
+  const dispatch = useDispatch();
   return (
     <>
+      <Navbar></Navbar>
       <div className="container mx-auto px-4">
         <Space
           direction="vertical"
@@ -123,7 +148,14 @@ export default function page() {
                         <Date dateString={val.created_at} />
                       </Col>
                       <Col xs={5} md={3}>
-                        <Button block>Edit</Button>
+                        <Button
+                          block
+                          onClick={() => {
+                            dispatch(increment());
+                          }}
+                        >
+                          Edit
+                        </Button>
                       </Col>
                       <Col xs={7} md={3}>
                         <Button

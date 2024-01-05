@@ -6,12 +6,28 @@ import {
   UserOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
-import { Layout, Menu, Card, Col, Divider, Row, Space, Button } from "antd";
+import {
+  Layout,
+  Menu,
+  Divider,
+  Space,
+  Button,
+  Flex,
+  Card,
+  Modal,
+  Row,
+  Col,
+  Form,
+  Input,
+  InputNumber,
+} from "antd";
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { parseISO, format } from "date-fns";
-import { useAppSelector, useAppDispatch, useAppStore } from "../lip/hooks";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "next/navigation";
+import Link from "next/link";
+import Navbar from "./component/Navbar";
 import {
   increment,
   decrement,
@@ -27,6 +43,14 @@ interface postList {
 type date = {
   dateString: string;
 };
+const navigation = [
+  { name: "Post", href: "/", current: false },
+  { name: "Draft", href: "/draft", current: false },
+];
+import { useSearchParams } from "next/navigation";
+function classNames(...classes: any) {
+  return classes.filter(Boolean).join(" ");
+}
 export default function Home() {
   const [current, setCurrent] = useState<string>("1");
   const [pageSize, setPageSize] = useState<string>("10");
@@ -34,7 +58,14 @@ export default function Home() {
   const [dateTimeEnd, setDateTimeEnd] = useState<string>("");
   const [postList, setPostList] = useState<postList[]>([]);
   const [loading, setLoding] = useState<boolean>(false);
-  const count = useSelector((state) => state.counter.value);
+  const dispatch = useDispatch();
+  const [form] = Form.useForm();
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const searchParams = useSearchParams();
+  const type = searchParams.get("type");
+  const titleValue = form.getFieldValue("Title");
+  const contentValue = form.getFieldValue("Content");
+
   async function fetchData() {
     try {
       const { data } = await axios.get(
@@ -53,29 +84,24 @@ export default function Home() {
     const date = parseISO(dateString);
     return <time dateTime={dateString}>{format(date, "dd-MM-yyyy K.m")}</time>;
   }
-  async function deletePost(id: string) {
-    let array = [...postList];
+  async function editPost(id: string) {
     setLoding(true);
     try {
-      const { data } = await axios.delete(
+      const { data } = await axios.get(
         `https://post-api.opensource-technology.com/api/posts/${id}`
       );
-      let index = array.findIndex((element) => element.id == id);
-      array.splice(index, 1);
-      setPostList(array);
+      console.log(data);
       setLoding(false);
     } catch (error) {
       setLoding(false);
       throw new Error("Error");
     }
   }
-  // const store = useAppStore();
-  // const dispatch = useAppDispatch();
+
   return (
     <>
+      <Navbar></Navbar>
       <div className="container mx-auto px-4">
-        {/* <input onChange={(e) => dispatch(increment())} /> */}
-        {count}
         <Space
           direction="vertical"
           size="middle"
@@ -106,10 +132,10 @@ export default function Home() {
                           block
                           danger
                           onClick={() => {
-                            deletePost(val.id);
+                            editPost(val.id);
                           }}
                         >
-                          Delete
+                          Edit
                         </Button>
                       </Col>
                     </Row>
