@@ -20,6 +20,7 @@ import {
   Form,
   Input,
   InputNumber,
+  DatePicker,
 } from "antd";
 import axios from "axios";
 import React, { useState, useEffect } from "react";
@@ -32,7 +33,11 @@ import {
   increment,
   decrement,
 } from "./GlobalRedux/Features/counter/counterSlice";
+import dayjs from "dayjs";
 const style: React.CSSProperties = { background: "#0092ff", padding: "8px 0" };
+
+const { Search } = Input;
+const { RangePicker } = DatePicker;
 interface postList {
   id: string;
   title: string;
@@ -65,11 +70,17 @@ export default function Home() {
   const type = searchParams.get("type");
   const titleValue = form.getFieldValue("Title");
   const contentValue = form.getFieldValue("Content");
+  const [startDate, setStartdate] = useState<string>("");
+  const [endDate, setEnddate] = useState<string>("");
+  const [search, setSearch] = useState<string>("");
+  const [timer, setTimer] = useState<any>(null);
+  const id_post = useSelector((state) => state.counter.id);
+  const ferch = useSelector((state) => state.counter.get_data);
 
   async function fetchData() {
     try {
       const { data } = await axios.get(
-        `${process.env.NEXT_PUBLIC_URL}/posts?page=${current}&limit=${pageSize}&start_date=${dateTimeStart}&end_date=${dateTimeEnd}}`
+        `${process.env.NEXT_PUBLIC_URL}/posts?page=${current}&limit=${pageSize}&term=${search}&start_date=${startDate}&end_date=${endDate}}`
       );
       setPostList(data.posts);
     } catch (error) {
@@ -77,12 +88,16 @@ export default function Home() {
     }
   }
   useEffect(() => {
+    // const myAbortController = new AbortController();
     fetchData();
-  }, []);
+    // return () => {
+    //   myAbortController.abort();
+    // };
+  }, [id_post, ferch, startDate, endDate, search]);
 
   function Date({ dateString }: date) {
     const date = parseISO(dateString);
-    return <time dateTime={dateString}>{format(date, "dd-MM-yyyy K.m")}</time>;
+    return <time dateTime={dateString}>{format(date, "dd-MM-yyyy h:mm")}</time>;
   }
   async function editPost(id: string) {
     setLoding(true);
@@ -90,17 +105,43 @@ export default function Home() {
       const { data } = await axios.get(
         `https://post-api.opensource-technology.com/api/posts/${id}`
       );
-      console.log(data);
       setLoding(false);
     } catch (error) {
       setLoding(false);
       throw new Error("Error");
     }
   }
-
+  interface data {
+    content: string;
+    title: string;
+  }
+  const pull_data = async (payload: data) => {
+    try {
+      const { data } = await axios.post(
+        `${process.env.NEXT_PUBLIC_URL}/posts`,
+        payload
+      );
+    } catch (error) {
+      throw new Error("Error");
+    }
+  };
+  const dateFormat = "YYYY/MM/DD";
+  const onChangeTime = async (value: any, dateString: any) => {
+    let start = dayjs(value[0].$d).format("YYYY-MM-DD");
+    let end = dayjs(value[1].$d).format("YYYY-MM-DD");
+    setStartdate(start);
+    setEnddate(end);
+  };
+  const input = (e) => {
+    clearTimeout(timer);
+    const newTimer = setTimeout(() => {
+      setSearch(e.target.value);
+    }, 1000);
+    setTimer(newTimer);
+  };
   return (
     <>
-      <Navbar></Navbar>
+      <Navbar func={pull_data}></Navbar>
       <div className="container mx-auto px-4">
         <Space
           direction="vertical"
@@ -108,6 +149,18 @@ export default function Home() {
           style={{ display: "flex" }}
           className="pt-5"
         >
+          <Row gutter={24} justify="space-between">
+            <Col span={5} offset={2}>
+              <Search
+                placeholder="input search text"
+                style={{ width: 200 }}
+                onChange={(e) => input(e)}
+              />
+            </Col>
+            <Col span={8}>
+              <RangePicker className="ml-0" onChange={onChangeTime} />
+            </Col>
+          </Row>
           <Row gutter={24} justify="center">
             <Col className="gutter-row" span={20}>
               <div>
@@ -132,7 +185,7 @@ export default function Home() {
                           block
                           danger
                           onClick={() => {
-                            editPost(val.id);
+                            dispatch(increment(val));
                           }}
                         >
                           Edit

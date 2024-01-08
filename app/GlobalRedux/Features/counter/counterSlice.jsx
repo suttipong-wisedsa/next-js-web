@@ -5,24 +5,38 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   value: 0,
   modal: false,
+  edit: {},
+  id: "",
+  get_data: null,
 };
 
 export const counterSlice = createSlice({
   name: "counter",
   initialState,
   reducers: {
-    increment: (state) => {
+    increment: (state, data) => {
+      state.edit = data.payload;
       state.modal = true;
     },
-    decrement: (state) => {
-      // state.value -= 1;
+    closeModal: (state) => {
+      state.modal = false;
     },
-    incrementByAmount: (state, action) => {
-      // state.value += action.payload;
+    deleteArray: (state, action) => {
+      state.id = action.payload;
+    },
+    getData(state, action) {
+      state.get_data = action.payload;
     },
   },
 });
 
-export const { increment, decrement, incrementByAmount } = counterSlice.actions;
+export const {
+  increment,
+  decrement,
+  incrementByAmount,
+  closeModal,
+  deleteArray,
+  getData,
+} = counterSlice.actions;
 
 export default counterSlice.reducer;
