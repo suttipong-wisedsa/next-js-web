@@ -6,6 +6,8 @@ import {
   UserOutlined,
   VideoCameraOutlined,
 } from "@ant-design/icons";
+import InputAddress from "react-thailand-address-autocomplete";
+import AddressForm from "./component/AddressForm";
 import {
   Layout,
   Menu,
@@ -139,10 +141,66 @@ export default function Home() {
     }, 1000);
     setTimer(newTimer);
   };
+  // const [error, setError] = useState("");
+  // const [page, setPage] = useState(0);
+  // const [name, setName] = useState("");
+  // const [phone, setPhone] = useState("");
+  // const [houseNumber, setHouseNumber] = useState("");
+  // const [subdistrict, setSubDistrict] = useState("");
+  // const [district, setDistrict] = useState("");
+  // const [province, setProvince] = useState("");
+  // const [zipcode, setZipcode] = useState("");
+  // const [fullAddress, setFullAddress] = useState({});
+
+  // function onSelect(fulladdress: any) {
+  //   const { subdistrict, district, province, zipcode } = fulladdress;
+  //   console.log(houseNumber);
+  //   setSubDistrict(subdistrict);
+  //   setDistrict(district);
+  //   setProvince(province);
+  //   setZipcode(zipcode);
+  //   setFullAddress([subdistrict, district, province, zipcode]);
+  //   setError("");
+  //   console.log("some fulladdress: ", fullAddress);
+  // }
+  // const [forOthers, setForOthers] = useState(false);
+  // const [senderName, setSenderName] = useState("");
+  // const deleteLocation = () => {
+  //   setSubDistrict("");
+  //   setDistrict("");
+  //   setProvince("");
+  //   setZipcode("");
+  // };
   return (
     <>
       <Navbar func={pull_data}></Navbar>
       <div className="container mx-auto px-4">
+        {/* <AddressForm
+          name={name}
+          setName={setName}
+          phone={phone}
+          setPhone={setPhone}
+          setError={setError}
+          houseNumber={houseNumber}
+          setHouseNumber={setHouseNumber}
+          subdistrict={subdistrict}
+          setSubDistrict={setSubDistrict}
+          district={district}
+          setDistrict={setDistrict}
+          province={province}
+          setProvince={setProvince}
+          zipcode={zipcode}
+          setZipcode={setZipcode}
+          fullAddress={fullAddress}
+          setFullAddress={setFullAddress}
+          onSelect={onSelect}
+          setForOthers={setForOthers}
+          forOthers={forOthers}
+          senderName={senderName}
+          setSenderName={setSenderName}
+          senderPhone={senderPhone}
+          setSenderPhone={setSenderPhone}
+        /> */}
         <Space
           direction="vertical"
           size="middle"
