@@ -7,7 +7,6 @@ import {
   VideoCameraOutlined,
 } from "@ant-design/icons";
 import InputAddress from "react-thailand-address-autocomplete";
-import AddressForm from "./component/AddressForm";
 import {
   Layout,
   Menu,
@@ -36,6 +35,10 @@ import {
   decrement,
 } from "./GlobalRedux/Features/counter/counterSlice";
 import dayjs from "dayjs";
+import {
+  fetchUserData,
+  fetchFakeApi,
+} from "./GlobalRedux/Features/counter/counterSlice";
 const style: React.CSSProperties = { background: "#0092ff", padding: "8px 0" };
 
 const { Search } = Input;
@@ -78,6 +81,7 @@ export default function Home() {
   const [timer, setTimer] = useState<any>(null);
   const id_post = useSelector((state) => state.counter.id);
   const ferch = useSelector((state) => state.counter.get_data);
+  const ferch_list = useSelector((state) => state.counter.list);
 
   async function fetchData() {
     try {
@@ -91,7 +95,16 @@ export default function Home() {
   }
   useEffect(() => {
     // const myAbortController = new AbortController();
-    fetchData();
+    // fetchData();
+    let payload = {
+      current,
+      pageSize,
+      search,
+      startDate,
+      endDate,
+    };
+    dispatch(fetchUserData(payload));
+    // dispatch(fetchFakeApi());
     // return () => {
     //   myAbortController.abort();
     // };
@@ -134,73 +147,83 @@ export default function Home() {
     setStartdate(start);
     setEnddate(end);
   };
-  const input = (e) => {
+  const input = (e: any): void => {
     clearTimeout(timer);
     const newTimer = setTimeout(() => {
       setSearch(e.target.value);
     }, 1000);
     setTimer(newTimer);
   };
-  // const [error, setError] = useState("");
-  // const [page, setPage] = useState(0);
-  // const [name, setName] = useState("");
-  // const [phone, setPhone] = useState("");
-  // const [houseNumber, setHouseNumber] = useState("");
-  // const [subdistrict, setSubDistrict] = useState("");
-  // const [district, setDistrict] = useState("");
-  // const [province, setProvince] = useState("");
-  // const [zipcode, setZipcode] = useState("");
-  // const [fullAddress, setFullAddress] = useState({});
+  const [subdistrict, setSubDistrict] = useState("");
+  const [district, setDistrict] = useState("");
+  const [province, setProvince] = useState("");
+  const [zipcode, setZipcode] = useState("");
+  const [fullAddress, setFullAddress] = useState({});
+  const [toggle, setToggle] = useState<boolean>(true);
 
-  // function onSelect(fulladdress: any) {
-  //   const { subdistrict, district, province, zipcode } = fulladdress;
-  //   console.log(houseNumber);
-  //   setSubDistrict(subdistrict);
-  //   setDistrict(district);
-  //   setProvince(province);
-  //   setZipcode(zipcode);
-  //   setFullAddress([subdistrict, district, province, zipcode]);
-  //   setError("");
-  //   console.log("some fulladdress: ", fullAddress);
-  // }
-  // const [forOthers, setForOthers] = useState(false);
-  // const [senderName, setSenderName] = useState("");
-  // const deleteLocation = () => {
-  //   setSubDistrict("");
-  //   setDistrict("");
-  //   setProvince("");
-  //   setZipcode("");
-  // };
+  function onSelect(fulladdress: any) {
+    const { subdistrict, district, province, zipcode } = fulladdress;
+    setSubDistrict(subdistrict);
+    setDistrict(district);
+    setProvince(province);
+    setZipcode(zipcode);
+    setFullAddress([subdistrict, district, province, zipcode]);
+  }
+  const deleteLocation = () => {
+    setSubDistrict("");
+    setDistrict("");
+    setProvince("");
+    setZipcode("");
+  };
   return (
     <>
       <Navbar func={pull_data}></Navbar>
       <div className="container mx-auto px-4">
-        {/* <AddressForm
-          name={name}
-          setName={setName}
-          phone={phone}
-          setPhone={setPhone}
-          setError={setError}
-          houseNumber={houseNumber}
-          setHouseNumber={setHouseNumber}
-          subdistrict={subdistrict}
-          setSubDistrict={setSubDistrict}
-          district={district}
-          setDistrict={setDistrict}
-          province={province}
-          setProvince={setProvince}
-          zipcode={zipcode}
-          setZipcode={setZipcode}
-          fullAddress={fullAddress}
-          setFullAddress={setFullAddress}
+        {/* <InputAddress
+          style={{
+            width: "100%",
+            outlineStyle: "none",
+          }}
+          placeholder="แขวง / ตำบล"
+          address="subdistrict"
+          value={subdistrict}
+          onChange={(e: any) => {
+            setSubDistrict(e.target.value);
+          }}
           onSelect={onSelect}
-          setForOthers={setForOthers}
-          forOthers={forOthers}
-          senderName={senderName}
-          setSenderName={setSenderName}
-          senderPhone={senderPhone}
-          setSenderPhone={setSenderPhone}
+        />
+        <InputAddress
+          style={{ width: "100%", outlineStyle: "none" }}
+          placeholder="เขต / อำเภอ"
+          address="district"
+          value={district}
+          onChange={(e: any) => {
+            setDistrict(e.target.value);
+          }}
+          onSelect={onSelect}
+        />
+        <InputAddress
+          style={{ width: "100%", outlineStyle: "none" }}
+          placeholder="จังหวัด"
+          address="province"
+          value={province}
+          onChange={(e: any) => {
+            setProvince(e.target.value);
+          }}
+          onSelect={onSelect}
+        />
+
+        <InputAddress
+          style={{ width: "100%", outlineStyle: "none" }}
+          placeholder="เลขไปรษณีย์"
+          address="zipcode"
+          value={zipcode}
+          onChange={(e: any) => {
+            setZipcode(e.target.value);
+          }}
+          onSelect={onSelect}
         /> */}
+        {/* {ferch_list.posts[0].title} */}
         <Space
           direction="vertical"
           size="middle"
@@ -222,7 +245,7 @@ export default function Home() {
           <Row gutter={24} justify="center">
             <Col className="gutter-row" span={20}>
               <div>
-                {postList.map((val: postList, index: number) => (
+                {ferch_list.map((val: postList, index: number) => (
                   <Card
                     className="mb-3"
                     key={index}
@@ -257,7 +280,6 @@ export default function Home() {
           </Row>
         </Space>
       </div>
-      ;
     </>
   );
 }

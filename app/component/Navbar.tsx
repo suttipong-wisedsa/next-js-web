@@ -269,7 +269,7 @@ function Navbar({ func }: any) {
       </Modal>
       <div className=" flex p-3 bg-gray-800 shadow-lg justify-between">
         {/* <div className='space-x-4 pt-1 text-center text-white'>WEB Blog</div> */}
-        <div className="hidden sm:ml-6 sm:block">
+        <div className=" sm:ml-6 sm:block">
           <div className="flex space-x-4">
             {navigation.map((item) => (
               <Link
@@ -287,7 +287,7 @@ function Navbar({ func }: any) {
             ))}
           </div>
         </div>
-        <div className="hidden sm:ml-6 sm:block">
+        <div className=" sm:ml-6 sm:block">
           <div className="flex space-x-4">
             <Button
               type="primary"
